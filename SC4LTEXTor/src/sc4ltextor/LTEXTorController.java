@@ -96,7 +96,6 @@ public class LTEXTorController implements Initializable {
             if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
                 DBPFLText ltext = (DBPFLText) type;
                 ltext.setString(ltext.getString().replace(transintext, transouttext));
-                System.out.println("Replaced " + transintext + " with " + transouttext);
             }
         }
         
