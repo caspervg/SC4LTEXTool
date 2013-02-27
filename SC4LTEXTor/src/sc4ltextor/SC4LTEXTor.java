@@ -19,7 +19,7 @@ public class SC4LTEXTor extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("TranslatorMock.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("LTEXTor.fxml"));
 
         stage.setTitle("SC4 LTEXT Tool");
         stage.setScene(new Scene(root, 750, 400));
