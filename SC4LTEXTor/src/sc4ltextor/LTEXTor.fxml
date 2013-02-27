@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?scenebuilder-background-color 0xdfdfdfff?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="750.0" xmlns:fx="http://javafx.com/fxml" fx:controller="sc4translator.TranslatorMockController">
+  <children>
+    <FlowPane hgap="5.0" layoutX="0.0" layoutY="0.0" minWidth="165.0" prefHeight="400.0" prefWidth="169.0" vgap="5.0">
+      <children>
+        <Button mnemonicParsing="false" onAction="#handleOpenButton" text="Load DAT" />
+        <Button mnemonicParsing="false" onAction="#handleSaveButton" text="Save DAT" />
+        <Separator prefWidth="145.0">
+          <FlowPane.margin>
+            <Insets top="5.0" fx:id="x2" />
+          </FlowPane.margin>
+        </Separator>
+        <Label text="Current Language:">
+          <font>
+            <Font name="System Bold" size="12.0" fx:id="x1" />
+          </font>
+        </Label>
+        <ChoiceBox prefWidth="145.0">
+          <items>
+            <FXCollections fx:factory="observableArrayList">
+              <String fx:value="Item 1" />
+              <String fx:value="Item 2" />
+              <String fx:value="Item 3" />
+            </FXCollections>
+          </items>
+        </ChoiceBox>
+        <Label font="$x1" text="Target Language:" />
+        <ChoiceBox prefWidth="145.0">
+          <items>
+            <FXCollections fx:factory="observableArrayList">
+              <String fx:value="Item 1" />
+              <String fx:value="Item 2" />
+              <String fx:value="Item 3" />
+            </FXCollections>
+          </items>
+        </ChoiceBox>
+        <Separator prefWidth="145.0" FlowPane.margin="$x2" />
+        <Label font="$x1" text="Replace:">
+          <FlowPane.margin>
+            <Insets />
+          </FlowPane.margin>
+        </Label>
+        <TextField prefWidth="148.0" />
+        <Label font="$x1" text="With:" />
+        <TextField prefWidth="145.0" />
+        <Button mnemonicParsing="false" prefWidth="145.0" text="Batch Translate" />
+        <Separator prefWidth="145.0" FlowPane.margin="$x2" />
+      </children>
+      <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+      </padding>
+    </FlowPane>
+    <FlowPane layoutX="169.0" layoutY="10.0" prefHeight="383.0" prefWidth="424.0">
+      <children>
+        <TextArea prefHeight="189.0" prefWidth="574.0" wrapText="true" />
+        <HBox id="HBox" alignment="CENTER" padding="$x2" prefWidth="424.0" spacing="5.0" />
+        <TableView fx:id="table" prefHeight="189.0" prefWidth="574.0">
+          <columns>
+            <TableColumn prefWidth="45.0" text="Index" fx:id="indexcol" />
+            <TableColumn prefWidth="75.0" text="Group ID" fx:id="gidcol" />
+            <TableColumn prefWidth="75.0" text="Instance ID" fx:id="iidcol" />
+            <TableColumn prefWidth="370.0" text="Contents" fx:id="contcol" />
+          </columns>
+        </TableView>
+      </children>
+    </FlowPane>
+  </children>
+</AnchorPane>
