@@ -17,12 +17,11 @@ import javafx.geometry.Insets;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
-import sc4ltextor.EditingCell;
-import sc4ltextor.LTTable;
 import ssp.dbpf.DBPFCollection;
 import ssp.dbpf.event.DBPFException;
 import ssp.dbpf.io.DBPFReader;
@@ -47,6 +46,7 @@ public class LTEXTorController implements Initializable {
     public TableView<LTTable> table;
     private final ObservableList<LTTable> tabledata = FXCollections.observableArrayList();
     public TableColumn gidcol, iidcol, contcol, indexcol;
+    public TextField transin, transout;
 
     public void handleOpenButton() throws DBPFException {
         FileChooser fc = new FileChooser();
@@ -63,7 +63,7 @@ public class LTEXTorController implements Initializable {
         file = fc.showOpenDialog(null);
         theDAT = DBPFReader.readCollection(file);
 
-        readDataIntoTable();
+        readDataIntoTable(false);
     }
 
     public void handleSaveButton() throws DBPFException {
@@ -85,13 +85,33 @@ public class LTEXTorController implements Initializable {
             DBPFWriter.writeCollection(theDAT);
         }
     }
+    
+    public void handleBatchTranslation() {
+        typeList = theDAT.getTypeList();
+        String transintext = transin.getText();
+        String transouttext = transout.getText();
+        for (int i = 0; i < typeList.size(); i++) {
+            DBPFType type = typeList.get(i);
+
+            if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
+                DBPFLText ltext = (DBPFLText) type;
+                ltext.setString(ltext.getString().replace(transintext, transouttext));
+                System.out.println("Replaced " + transintext + " with " + transouttext);
+            }
+        }
+        
+        //Refresh the table
+        readDataIntoTable(true);
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         //Syntactic sugar, it has to be here, but does nothing
     }
 
-    private void readDataIntoTable() {
+    private void readDataIntoTable(boolean refreshFirst) {
+        if(refreshFirst) tabledata.clear();
+        
         typeList = theDAT.getTypeList();
         for (int i = 0; i < typeList.size(); i++) {
             DBPFType type = typeList.get(i);
@@ -119,7 +139,10 @@ public class LTEXTorController implements Initializable {
             new EventHandler<TableColumn.CellEditEvent<LTTable, String>>() {
             @Override
             public void handle(TableColumn.CellEditEvent<LTTable, String> t) {
-                ((LTTable) t.getTableView().getItems().get(t.getTablePosition().getRow())).setString(t.getNewValue());
+                String newValue = t.getNewValue();
+                ((LTTable) t.getTableView().getItems().get(t.getTablePosition().getRow())).setString(newValue);
+                //Sets the actual DBPF string to the new string
+                ((DBPFLText) theDAT.getTypeList().get(t.getTableView().getItems().get(t.getTablePosition().getRow()).getIndex())).setString(newValue);
             }
         });
         //---
