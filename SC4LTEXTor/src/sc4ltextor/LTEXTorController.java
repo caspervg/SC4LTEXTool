@@ -4,6 +4,7 @@
  */
 package sc4ltextor;
 
+import javafx.scene.input.MouseEvent;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -14,22 +15,18 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.Callback;
+import javax.swing.JOptionPane;
 import ssp.dbpf.DBPFCollection;
 import ssp.dbpf.event.DBPFException;
 import ssp.dbpf.io.DBPFReader;
@@ -57,19 +54,17 @@ public class LTEXTorController implements Initializable {
     public TableColumn gidcol, iidcol, contcol, indexcol;
     public TextField transin, transout, incr;
     public Label lastaction;
+    public TextArea textar;
+    
 
     public void handleIncrement() throws DBPFException {
         long maxLength = Long.parseLong("4294967280");
+        //long maxLength = Long.parseLong("100");           for testing purposes
         long increment = Long.parseLong(incr.getText());
         for (DBPFType type : typeList) {
             long currGID = type.getGID();
             if (currGID + increment >= maxLength) {
-                Stage dialogStage = new Stage();
-                dialogStage.initModality(Modality.WINDOW_MODAL);
-                dialogStage.setScene(new Scene(VBoxBuilder.create().
-                        children(new Text("Could not increment the Group IDs. One (or more) entries have a GID higher than the maximum value of 0xFFFFFFF0"), new Button("OK")).
-                        alignment(Pos.CENTER).padding(new Insets(5)).build()));
-                dialogStage.show();
+                JOptionPane.showMessageDialog(null, "Could not increment the Group IDs.\nOne (or more) entries have a GID higher than the maximum value of 0xFFFFFFF0", "Failed to increment!", JOptionPane.ERROR_MESSAGE);              
                 lastaction.setText("Incrementing failed");
                 return;
             }
@@ -100,6 +95,7 @@ public class LTEXTorController implements Initializable {
         file = fc.showOpenDialog(null);
         theDAT = DBPFReader.readCollection(file);
 
+        lastaction.setTextOverrun(OverrunStyle.ELLIPSIS);
         lastaction.setText("Opened " + theDAT.getFilename().getName());
         readDataIntoTable(false);
     }
@@ -149,6 +145,7 @@ public class LTEXTorController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         //Syntactic sugar, it has to be here, but does nothing
+        lastaction.setTextOverrun(OverrunStyle.ELLIPSIS);
     }
 
     private void readDataIntoTable(boolean refreshFirst) {
@@ -168,8 +165,16 @@ public class LTEXTorController implements Initializable {
         Callback<TableColumn, TableCell> cellFactory =
                 new Callback<TableColumn, TableCell>() {
                     @Override
-                    public TableCell call(TableColumn p) {
-                        return new EditingCell();
+                    public TableCell call(final TableColumn p) {
+                        final EditingCell nieuw = new EditingCell();
+                        nieuw.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                            @Override
+                            public void handle(MouseEvent event) {
+                                textar.setText(p.getCellData(nieuw.getIndex()).toString());
+                                //need to add buttons to confirm those edits.. not sure how yet tho :S
+                            }
+                        });
+                        return nieuw;
                     }
                 };
 

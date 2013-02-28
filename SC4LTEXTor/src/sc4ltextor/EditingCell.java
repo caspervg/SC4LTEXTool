@@ -21,6 +21,7 @@ public class EditingCell extends TableCell<LTTable, String> {
 
     public EditingCell() {
     }
+    
 
     @Override
     public void startEdit() {

@@ -58,12 +58,8 @@
     <FlowPane layoutX="169.0" layoutY="10.0" prefHeight="383.0" prefWidth="424.0">
       <children>
         <TextArea fx:id="textar" prefHeight="169.0" prefWidth="574.0" wrapText="true" />
-        <HBox id="HBox" alignment="CENTER" prefWidth="424.0" spacing="5.0">
-          <padding>
-            <Insets top="5.0" fx:id="x2" />
-          </padding>
-        </HBox>
-        <Button fx:id="updbutton" depthTest="INHERIT" mnemonicParsing="false" mouseTransparent="false" text="Update LTEXT" translateX="55.0" translateY="0.0">
+        <HBox id="HBox" alignment="CENTER" padding="$x2" prefWidth="424.0" spacing="5.0" />
+        <Button fx:id="updbutton" depthTest="INHERIT" mnemonicParsing="false" mouseTransparent="false" text="Update LTEXT">
           <FlowPane.margin>
             <Insets bottom="2.5" top="2.5" />
           </FlowPane.margin>
