@@ -21,30 +21,13 @@
             <Insets top="5.0" fx:id="x2" />
           </FlowPane.margin>
         </Separator>
-        <Label text="Current Language:">
+        <Label text="In/decrement GIDs:">
           <font>
             <Font name="System Bold" size="12.0" fx:id="x1" />
           </font>
         </Label>
-        <ChoiceBox prefWidth="145.0">
-          <items>
-            <FXCollections fx:factory="observableArrayList">
-              <String fx:value="Item 1" />
-              <String fx:value="Item 2" />
-              <String fx:value="Item 3" />
-            </FXCollections>
-          </items>
-        </ChoiceBox>
-        <Label font="$x1" text="Target Language:" />
-        <ChoiceBox prefWidth="145.0">
-          <items>
-            <FXCollections fx:factory="observableArrayList">
-              <String fx:value="Item 1" />
-              <String fx:value="Item 2" />
-              <String fx:value="Item 3" />
-            </FXCollections>
-          </items>
-        </ChoiceBox>
+        <TextField prefWidth="145.0" fx:id="incr"/>
+        <Button mnemonicParsing="false" prefWidth="145.0" text="Batch Increment" onAction="#handleIncrement"/>
         <Separator prefWidth="145.0" FlowPane.margin="$x2" />
         <Label font="$x1" text="Replace:">
           <FlowPane.margin>
@@ -56,6 +39,16 @@
         <TextField prefWidth="145.0" fx:id="transout"/>
         <Button mnemonicParsing="false" prefWidth="145.0" text="Batch Translate" onAction="#handleBatchTranslation"/>
         <Separator prefWidth="145.0" FlowPane.margin="$x2" />
+        <Label text="Last action:">
+          <font>
+            <Font name="System Bold" size="12.0" fx:id="x1" />
+          </font>
+        </Label>
+        <Label text="Started LTEXTool" fx:id="lastaction">
+          <font>
+            <Font name="System" size="12.0"/>
+          </font>
+        </Label>
       </children>
       <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
