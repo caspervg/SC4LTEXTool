@@ -22,7 +22,7 @@ public class SC4LTEXTor extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("LTEXTor.fxml"));
 
         stage.setTitle("SC4 LTEXT Tool");
-        stage.setScene(new Scene(root, 750, 400));
+        stage.setScene(new Scene(root, 750, 450));
         stage.show();
     }
 
