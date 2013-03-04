@@ -18,8 +18,15 @@ import javafx.scene.input.KeyEvent;
 public class EditingCell extends TableCell<LTTable, String> {
 
     private TextField textField;
+    private long gid;
+    private long iid;
 
     public EditingCell() {
+    }
+    
+    public EditingCell(long g, long i) {
+        this.gid = g;
+        this.iid = i;
     }
     
 

@@ -272,6 +272,8 @@ public class LTEXTorController implements Initializable {
                     @Override
                     public void handle(MouseEvent event) {
                         textar.setText(p.getCellData(nieuw.getIndex()).toString());
+                        textar.setId(tabledata.get(nieuw.getIndex()).getGid()+"_"+tabledata.get(nieuw.getIndex()).getIid());
+                        System.out.println(textar.getId());
                         //need to add buttons to confirm those edits.. not sure how yet tho :S
                     }
                 });
