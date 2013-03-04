@@ -11,26 +11,36 @@ import java.io.FileWriter;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.regex.Pattern;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBuilder;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.LabelBuilder;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextAreaBuilder;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javax.swing.JOptionPane;
 import ssp.dbpf.DBPFCollection;
@@ -247,6 +257,72 @@ public class LTEXTorController implements Initializable {
         regexCheck.setSelected(true);
         regexCheck.setTooltip(new Tooltip("Checked: Automatically double up backslashes. Not checked: You have to use double blackslashes yourself"));
         regexField.setTooltip(new Tooltip("Format: REPLACE/BY"));
+        textar.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent t) {
+                if (t.getCode() == KeyCode.F1) {
+                    handleUpdateLTEXT();
+                } else if (t.getCode() == KeyCode.F2) {
+                    handleResetLTEXT();
+                }
+            }
+        });
+    }
+    
+    public void handleResetLTEXT() {
+        int index = Integer.parseInt(textar.getId());
+        DBPFLText ltext = (DBPFLText) typeList.get(index);
+        textar.setText(ltext.getString());
+    }
+    
+    public void handleUpdateLTEXT() {
+        int index = Integer.parseInt(textar.getId());
+        DBPFLText ltext = (DBPFLText) typeList.get(index);
+        ltext.setString(textar.getText());
+        readDataIntoTable(true);
+    }
+    
+    public void handleRemoveLTEXT() {
+        int index = Integer.parseInt(textar.getId());
+        typeList.remove(index);
+        readDataIntoTable(true);
+    }
+    
+    public void handleAddLTEXT() {
+        final Stage secondaryStage = new Stage();
+        FlowPane secondaryLayout = new FlowPane();
+        final TextField tgid = new TextField();
+        final TextField tiid = new TextField();
+        Label lgid = LabelBuilder.create().text("Enter GID: ").build();
+        Label liid = LabelBuilder.create().text("Enter IID: ").build();
+        final TextArea text = TextAreaBuilder.create().text("Enter LTEXT here").prefWidth(300).prefHeight(200).build();
+        Button accept = ButtonBuilder.create().text("Create LTEXT").onAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                DBPFLText nieuw = new DBPFLText();
+                nieuw.setString(text.getText());
+                TGIKey nieuwTGI = TGIKeys.LTEXT.getTGIKey();
+                nieuwTGI.setGID(Long.parseLong(tgid.getText(),16));
+                nieuwTGI.setIID(Long.parseLong(tiid.getText(),16));
+                nieuw.setTGIKey(nieuwTGI);
+                typeList.add(nieuw);
+                tabledata.add(new LTTable(nieuw.getGID(), nieuw.getIID(), ((DBPFLText) nieuw).getString(), tabledata.toArray().length+1));
+                secondaryStage.hide();                
+            }
+        }).build();
+        HBox hbox1 = new HBox();
+        HBox hbox2 = new HBox();
+        HBox hbox3 = new HBox();
+        HBox hbox4 = new HBox();
+        hbox1.getChildren().addAll(lgid,tgid);
+        hbox2.getChildren().addAll(liid,tiid);
+        hbox3.getChildren().add(accept);
+        hbox4.getChildren().add(text);
+        secondaryLayout.getChildren().addAll(hbox1,hbox2,hbox4,hbox3);
+        secondaryStage.setScene(new Scene(secondaryLayout, 305, 305));
+        secondaryStage.setTitle("Add an LTEXT");
+        secondaryStage.show();
+        
     }
 
     private void readDataIntoTable(boolean refreshFirst) {
@@ -272,9 +348,7 @@ public class LTEXTorController implements Initializable {
                     @Override
                     public void handle(MouseEvent event) {
                         textar.setText(p.getCellData(nieuw.getIndex()).toString());
-                        textar.setId(tabledata.get(nieuw.getIndex()).getGid()+"_"+tabledata.get(nieuw.getIndex()).getIid());
-                        System.out.println(textar.getId());
-                        //need to add buttons to confirm those edits.. not sure how yet tho :S
+                        textar.setId(""+tabledata.get(nieuw.getIndex()).getIndex());
                     }
                 });
                 return nieuw;
