@@ -72,6 +72,7 @@ public class LTEXTorController implements Initializable {
     public Label lastaction;
     public TextArea textar;
     public CheckBox regexCheck;
+    public ErrorHandler eh;
 
     public void handleIncrement() throws DBPFException {
         long maxLength = Long.parseLong("4294967280");
@@ -97,86 +98,91 @@ public class LTEXTorController implements Initializable {
     }
 
     public void handleOpenButton() throws DBPFException {
-        FileChooser fc = new FileChooser();
-        File file;
+        try {
+            FileChooser fc = new FileChooser();
+            File file;
 
-        //Set extension filter
-        FileChooser.ExtensionFilter extFilterDat = new FileChooser.ExtensionFilter("DAT files (*.dat)", "*.dat");
-        FileChooser.ExtensionFilter extFilterLot = new FileChooser.ExtensionFilter("SC4LOT files (*.sc4lot)", "*.sc4lot");
-        FileChooser.ExtensionFilter extFilterDesc = new FileChooser.ExtensionFilter("SC4DESC files (*.sc4desc)", "*.sc4desc");
-        FileChooser.ExtensionFilter extFilterModel = new FileChooser.ExtensionFilter("SC4MODEL files (*.sc4model)", "*.sc4model");
-        fc.getExtensionFilters().addAll(extFilterDat, extFilterLot, extFilterDesc, extFilterModel);
+            //Set extension filter
+            FileChooser.ExtensionFilter extFilterDat = new FileChooser.ExtensionFilter("DAT files (*.dat)", "*.dat");
+            FileChooser.ExtensionFilter extFilterLot = new FileChooser.ExtensionFilter("SC4LOT files (*.sc4lot)", "*.sc4lot");
+            FileChooser.ExtensionFilter extFilterDesc = new FileChooser.ExtensionFilter("SC4DESC files (*.sc4desc)", "*.sc4desc");
+            FileChooser.ExtensionFilter extFilterModel = new FileChooser.ExtensionFilter("SC4MODEL files (*.sc4model)", "*.sc4model");
+            fc.getExtensionFilters().addAll(extFilterDat, extFilterLot, extFilterDesc, extFilterModel);
 
-        //Show open file dialog
-        file = fc.showOpenDialog(null);
-        theDAT = DBPFReader.readCollection(file);
+            //Show open file dialog
+            file = fc.showOpenDialog(null);
+            theDAT = DBPFReader.readCollection(file);
 
-        lastAction("Opened " + theDAT.getFilename().getName(), Color.DARKGREEN);
-        readDataIntoTable(false);
+            lastAction("Opened " + theDAT.getFilename().getName(), Color.DARKGREEN);
+            readDataIntoTable(false);
+        } catch (Exception e) {
+            eh.throwError("Could not open that file", "Opening failed", e);
+            lastAction("Failed to open file", Color.DARKRED);
+        }
     }
 
     public void handleSaveButton() throws DBPFException {
-        FileChooser fc = new FileChooser();
-        File file;
+        try {
+            FileChooser fc = new FileChooser();
+            File file;
 
-        //Set extension filter
-        FileChooser.ExtensionFilter extFilterDat = new FileChooser.ExtensionFilter("DAT files (*.dat)", "*.dat");
-        FileChooser.ExtensionFilter extFilterLot = new FileChooser.ExtensionFilter("SC4LOT files (*.sc4lot)", "*.sc4lot");
-        FileChooser.ExtensionFilter extFilterDesc = new FileChooser.ExtensionFilter("SC4DESC files (*.sc4desc)", "*.sc4desc");
-        FileChooser.ExtensionFilter extFilterModel = new FileChooser.ExtensionFilter("SC4MODEL files (*.sc4model)", "*.sc4model");
-        fc.getExtensionFilters().addAll(extFilterDat, extFilterLot, extFilterDesc, extFilterModel);
+            //Set extension filter
+            FileChooser.ExtensionFilter extFilterDat = new FileChooser.ExtensionFilter("DAT files (*.dat)", "*.dat");
+            FileChooser.ExtensionFilter extFilterLot = new FileChooser.ExtensionFilter("SC4LOT files (*.sc4lot)", "*.sc4lot");
+            FileChooser.ExtensionFilter extFilterDesc = new FileChooser.ExtensionFilter("SC4DESC files (*.sc4desc)", "*.sc4desc");
+            FileChooser.ExtensionFilter extFilterModel = new FileChooser.ExtensionFilter("SC4MODEL files (*.sc4model)", "*.sc4model");
+            fc.getExtensionFilters().addAll(extFilterDat, extFilterLot, extFilterDesc, extFilterModel);
 
-        //Show save file dialog
-        file = fc.showSaveDialog(null);
+            //Show save file dialog
+            file = fc.showSaveDialog(null);
 
-        if (file != null) {
-            theDAT.setFilename(file);
-            DBPFWriter.writeCollection(theDAT);
-            lastAction("Saved " + file.getName(), Color.DARKGREEN);
+            if (file != null) {
+                theDAT.setFilename(file);
+                DBPFWriter.writeCollection(theDAT);
+                lastAction("Saved " + file.getName(), Color.DARKGREEN);
+            }
+        } catch (Exception e) {
+            eh.throwError("Could not save that file", "Saving failed", e);
+            lastAction("Failed to save file", Color.DARKRED);
         }
     }
 
     public void handleExport() throws Exception {
-        FileChooser fc = new FileChooser();
-        File file;
-        typeList = theDAT.getTypeList();
+        eh.throwError("Exporting files is not yet implemented.", "Failed to export");
+        lastAction("Failed to export", Color.DARKRED);
 
-        //Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (.txt)", "*.dat");
-        fc.getExtensionFilters().addAll(extFilter);
-
-        //Show save file dialog
-        file = fc.showSaveDialog(null);
-
-        if (file != null) {
-            try (BufferedWriter out = new BufferedWriter(new FileWriter(file))) {
-                out.write("~~~ BEGIN ~~~");
-                out.write("FNAME: " + theDAT.getFilename());
-                out.newLine();
-                out.newLine();
-                for (int i = 0; i < typeList.size(); i++) {
-                    DBPFType type = typeList.get(i);
-                    if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
-                        DBPFLText ltext = (DBPFLText) type;
-                        out.write("~~~" + ltext.getTGIKey() + "~~~");
-                        out.newLine();
-                        out.write(ltext.getString());
-                        out.newLine();
-                    }
-                }
-                out.write("~~~ END ~~~");
-                lastAction("Exported LTEXTs", Color.DARKGREEN);
-            } catch (Exception e) {
-                System.out.println("Could not export data to file. " + e.getLocalizedMessage());
-                lastAction("ERROR Exporting", Color.DARKRED);
-            }
-        } else {
-            lastAction("ERROR Exporting", Color.DARKRED);
-        }
+        /**
+         * try { FileChooser fc = new FileChooser(); File file; typeList =
+         * theDAT.getTypeList();
+         *
+         * //Set extension filter FileChooser.ExtensionFilter extFilter = new
+         * FileChooser.ExtensionFilter("TXT files (.txt)", "*.dat");
+         * fc.getExtensionFilters().addAll(extFilter);
+         *
+         * //Show save file dialog file = fc.showSaveDialog(null);
+         *
+         * if (file != null) { try (BufferedWriter out = new BufferedWriter(new
+         * FileWriter(file))) { out.write("~~~ BEGIN ~~~"); out.newLine();
+         * out.write("FNAME: " + theDAT.getFilename()); out.newLine();
+         * out.newLine(); for (int i = 0; i < typeList.size(); i++) { DBPFType
+         * type = typeList.get(i); if
+         * (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) { DBPFLText
+         * ltext = (DBPFLText) type; out.write("~~~" + ltext.getTGIKey() +
+         * "~~~"); out.newLine(); out.write(ltext.getString()); out.newLine(); }
+         * } out.write("~~~ END ~~~"); lastAction("Exported LTEXTs",
+         * Color.DARKGREEN); } catch (Exception e) { eh.throwError("Could not
+         * export this file", "Failed to export", e); lastAction("Failed to
+         * export file", Color.DARKRED); } } else { lastAction("ERROR
+         * Exporting", Color.DARKRED); } } catch (Exception e) {
+         * eh.throwError("Could not export this file", "Failed to export", e);
+         * lastAction("Failed to export file", Color.DARKRED); }
+         *
+         */
     }
 
     public void handleImport() throws Exception {
-        throw new UnsupportedOperationException("Not yet implemented");
+        eh.throwError("Importing files is not yet implemented.", "Failed to import");
+        lastAction("Failed to import", Color.DARKRED);
 
         /**
          * FileChooser fc = new FileChooser(); File file;
@@ -198,54 +204,64 @@ public class LTEXTorController implements Initializable {
     }
 
     public void handleBatchTranslation() {
-        typeList = theDAT.getTypeList();
-        String transintext = transin.getText();
-        String transouttext = transout.getText();
-        int counter = 0;
+        try {
+            typeList = theDAT.getTypeList();
+            String transintext = transin.getText();
+            String transouttext = transout.getText();
+            int counter = 0;
 
-        for (int i = 0; i < typeList.size(); i++) {
-            DBPFType type = typeList.get(i);
+            for (int i = 0; i < typeList.size(); i++) {
+                DBPFType type = typeList.get(i);
 
-            if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
-                DBPFLText ltext = (DBPFLText) type;
-                ltext.setString(ltext.getString().replace(transintext, transouttext));
-                counter++;
+                if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
+                    DBPFLText ltext = (DBPFLText) type;
+                    ltext.setString(ltext.getString().replace(transintext, transouttext));
+                    counter++;
+                }
             }
-        }
 
-        lastAction("Translated " + counter + " LTEXTs", Color.DARKGREEN);
-        //Refresh the table
-        readDataIntoTable(true);
+            lastAction("Translated " + counter + " LTEXTs", Color.DARKGREEN);
+            //Refresh the table
+            readDataIntoTable(true);
+        } catch (Exception e) {
+            eh.throwError("Could not execute batch translate", "Failed to batch translate", e);
+            lastAction("Failed to translate", Color.DARKRED);
+        }
     }
 
     public void handleRegex() throws DBPFException {
-        typeList = theDAT.getTypeList();
-        int counter = 0;
-        String input = regexCheck.isSelected() ? regexField.getText().replace("\\","\\\\") : regexField.getText();
-        String[] inputregex = input.split("/");
-        
-        for (int i = 0; i < typeList.size(); i++) {
-            DBPFType type = typeList.get(i);
+        try {
+            typeList = theDAT.getTypeList();
+            int counter = 0;
+            String input = regexCheck.isSelected() ? regexField.getText().replace("\\", "\\\\") : regexField.getText();
+            String[] inputregex = input.split("/");
 
-            if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
-                DBPFLText ltext = ((DBPFLText) type);
-                String text = ltext.getString();
-                text = text.replaceAll(inputregex[0], inputregex[1]);
+            for (int i = 0; i < typeList.size(); i++) {
+                DBPFType type = typeList.get(i);
 
-                if (!text.equals(ltext.getString())) {
-                    counter++;
+                if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
+                    DBPFLText ltext = ((DBPFLText) type);
+                    String text = ltext.getString();
+                    text = text.replaceAll(inputregex[0], inputregex[1]);
+
+                    if (!text.equals(ltext.getString())) {
+                        counter++;
+                    }
+
+                    ltext.setString(text);
                 }
-
-                ltext.setString(text);
             }
-        }
 
-        lastAction("Regexed " + counter + " LTEXTs", Color.DARKGREEN);
-        //Refresh the table
-        readDataIntoTable(true);
+            lastAction("Regexed " + counter + " LTEXTs", Color.DARKGREEN);
+            //Refresh the table
+            readDataIntoTable(true);
+        } catch (Exception e) {
+            eh.throwError("Could not execute the Batch RegEx. Perhaps your regular expression was not formatted correctly?", "Failed to batch RegEx", e);
+            lastAction("Failed to RegEx", Color.DARKRED);
+        }
     }
 
-    private void lastAction(String StoSet, Color CtoSet) {
+    public void lastAction(String StoSet, Color CtoSet) {
         lastaction.setText(StoSet);
         lastaction.setTextFill(CtoSet);
     }
@@ -267,62 +283,96 @@ public class LTEXTorController implements Initializable {
                 }
             }
         });
+        eh = new ErrorHandler();
     }
-    
+
     public void handleResetLTEXT() {
-        int index = Integer.parseInt(textar.getId());
-        DBPFLText ltext = (DBPFLText) typeList.get(index);
-        textar.setText(ltext.getString());
+        try {
+            int index = Integer.parseInt(textar.getId());
+            DBPFLText ltext = (DBPFLText) typeList.get(index);
+            textar.setText(ltext.getString());
+            lastAction("Reset LTEXT " + index, Color.DARKGREEN);
+        } catch (Exception e) {
+            eh.throwError("Could not reset the LTEXT.", "Failed to Reset LTEXT", e);
+            lastAction("Failed to Reset", Color.DARKRED);
+        }
     }
-    
+
     public void handleUpdateLTEXT() {
-        int index = Integer.parseInt(textar.getId());
-        DBPFLText ltext = (DBPFLText) typeList.get(index);
-        ltext.setString(textar.getText());
-        readDataIntoTable(true);
+        try {
+            int index = Integer.parseInt(textar.getId());
+            DBPFLText ltext = (DBPFLText) typeList.get(index);
+            ltext.setString(textar.getText());
+            readDataIntoTable(true);
+            lastAction("Edited LTEXT " + index, Color.DARKGREEN);
+        } catch (Exception e) {
+            eh.throwError("Could not edit the LTEXT.", "Failed to Edit LTEXT", e);
+            lastAction("Failed to Edit", Color.DARKRED);
+        }
     }
-    
+
     public void handleRemoveLTEXT() {
-        int index = Integer.parseInt(textar.getId());
-        typeList.remove(index);
-        readDataIntoTable(true);
+        try {
+            int index = Integer.parseInt(textar.getId());
+            typeList.remove(index);
+            readDataIntoTable(true);
+            lastAction("Removed LTEXT " + index, Color.DARKGREEN);
+        } catch (Exception e) {
+            eh.throwError("Could not remove the LTEXT", "Failed to Remove LTEXT", e);
+            lastAction("Failed to Remove", Color.DARKRED);
+        }
     }
-    
+
     public void handleAddLTEXT() {
-        final Stage secondaryStage = new Stage();
-        FlowPane secondaryLayout = new FlowPane();
-        final TextField tgid = new TextField();
-        final TextField tiid = new TextField();
-        Label lgid = LabelBuilder.create().text("Enter GID: ").build();
-        Label liid = LabelBuilder.create().text("Enter IID: ").build();
-        final TextArea text = TextAreaBuilder.create().text("Enter LTEXT here").prefWidth(300).prefHeight(200).build();
-        Button accept = ButtonBuilder.create().text("Create LTEXT").onAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-                DBPFLText nieuw = new DBPFLText();
-                nieuw.setString(text.getText());
-                TGIKey nieuwTGI = TGIKeys.LTEXT.getTGIKey();
-                nieuwTGI.setGID(Long.parseLong(tgid.getText(),16));
-                nieuwTGI.setIID(Long.parseLong(tiid.getText(),16));
-                nieuw.setTGIKey(nieuwTGI);
-                typeList.add(nieuw);
-                tabledata.add(new LTTable(nieuw.getGID(), nieuw.getIID(), ((DBPFLText) nieuw).getString(), tabledata.toArray().length+1));
-                secondaryStage.hide();                
-            }
-        }).build();
-        HBox hbox1 = new HBox();
-        HBox hbox2 = new HBox();
-        HBox hbox3 = new HBox();
-        HBox hbox4 = new HBox();
-        hbox1.getChildren().addAll(lgid,tgid);
-        hbox2.getChildren().addAll(liid,tiid);
-        hbox3.getChildren().add(accept);
-        hbox4.getChildren().add(text);
-        secondaryLayout.getChildren().addAll(hbox1,hbox2,hbox4,hbox3);
-        secondaryStage.setScene(new Scene(secondaryLayout, 305, 305));
-        secondaryStage.setTitle("Add an LTEXT");
-        secondaryStage.show();
-        
+        try {
+            final Stage secondaryStage = new Stage();
+            FlowPane secondaryLayout = new FlowPane();
+            final TextField tgid = new TextField();
+            final TextField tiid = new TextField();
+            Label lgid = LabelBuilder.create().text("Enter GID: ").build();
+            Label liid = LabelBuilder.create().text("Enter IID: ").build();
+            final TextArea text = TextAreaBuilder.create().text("Enter LTEXT here").prefWidth(300).prefHeight(200).build();
+            Button accept = ButtonBuilder.create().text("Create LTEXT").onAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent t) {
+                    try {
+                        DBPFLText nieuw = new DBPFLText();
+                        nieuw.setString(text.getText());
+                        TGIKey nieuwTGI = new TGIKey();
+                        nieuwTGI.setTID(TGIKeys.LTEXT.getTGIKey().getTID());
+                        nieuwTGI.setGID(Long.parseLong(tgid.getText(), 16));
+                        nieuwTGI.setIID(Long.parseLong(tiid.getText(), 16));
+                        System.out.println(nieuwTGI);
+                        nieuw.setTGIKey(nieuwTGI);
+                        System.out.println(nieuw);
+                        typeList.add(nieuw);
+                        secondaryStage.hide();
+                        readDataIntoTable(true);
+                        lastAction("Added LTEXT", Color.DARKGREEN);
+                        System.out.println(typeList);
+                    } catch (Exception e) {
+                        eh.throwError("Could not add a new LTEXT", "Failed to Add LTEXT", e);
+                        lastAction("Failed to Add", Color.DARKRED);
+                    }
+                }
+            }).build();
+            HBox hbox1 = new HBox();
+            HBox hbox2 = new HBox();
+            HBox hbox3 = new HBox();
+            HBox hbox4 = new HBox();
+            hbox1.getChildren().addAll(lgid, tgid);
+            hbox2.getChildren().addAll(liid, tiid);
+            hbox3.getChildren().add(accept);
+            hbox4.getChildren().add(text);
+            secondaryLayout.getChildren().addAll(hbox1, hbox2, hbox4, hbox3);
+            secondaryStage.setScene(new Scene(secondaryLayout, 305, 305));
+            secondaryStage.setTitle("Add an LTEXT");
+            secondaryStage.show();
+        } catch (Exception e) {
+            eh.throwError("Could not add a new LTEXT", "Failed to Add LTEXT", e);
+            lastAction("Failed to Add", Color.DARKRED);
+        }
+
     }
 
     private void readDataIntoTable(boolean refreshFirst) {
@@ -348,7 +398,7 @@ public class LTEXTorController implements Initializable {
                     @Override
                     public void handle(MouseEvent event) {
                         textar.setText(p.getCellData(nieuw.getIndex()).toString());
-                        textar.setId(""+tabledata.get(nieuw.getIndex()).getIndex());
+                        textar.setId("" + tabledata.get(nieuw.getIndex()).getIndex());
                     }
                 });
                 return nieuw;
@@ -369,7 +419,7 @@ public class LTEXTorController implements Initializable {
                 ((LTTable) t.getTableView().getItems().get(t.getTablePosition().getRow())).setString(newValue);
                 //Sets the actual DBPF string to the new string
                 ((DBPFLText) theDAT.getTypeList().get(t.getTableView().getItems().get(t.getTablePosition().getRow()).getIndex())).setString(newValue);
-                lastAction("Edited row " + t.getTableView().getItems().get(t.getTablePosition().getRow()).getIndex(), Color.DARKGREEN);
+                lastAction("Edited LTEXT " + t.getTableView().getItems().get(t.getTablePosition().getRow()).getIndex(), Color.DARKGREEN);
             }
         });
         //---
