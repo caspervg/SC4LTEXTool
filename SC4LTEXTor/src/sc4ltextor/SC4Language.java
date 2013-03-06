@@ -4,8 +4,6 @@
  */
 package sc4ltextor;
 
-import javafx.scene.control.ChoiceBox;
-
 /**
  *
  * @author Casper

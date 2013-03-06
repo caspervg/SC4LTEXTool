@@ -20,7 +20,6 @@ public class SC4LTEXTool extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("LTEXTool.fxml"));
-
         stage.setTitle("SC4 LTEXTool");
         stage.setScene(new Scene(root, 800, 500));
         stage.show();

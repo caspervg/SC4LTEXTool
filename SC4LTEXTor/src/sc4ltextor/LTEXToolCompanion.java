@@ -38,6 +38,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -69,6 +70,7 @@ public class LTEXToolCompanion implements Initializable {
     public DBPFCollection theDAT;
     private List<DBPFType> typeList;
     public TableView<LTEXTTableRow> table;
+    public AnchorPane anchor;
     private final ObservableList<LTEXTTableRow> tabledata = FXCollections.observableArrayList();
     public TableColumn gidcol, iidcol, contcol, indexcol;
     public TextField transin, transout, incr, regexField;
@@ -78,6 +80,11 @@ public class LTEXToolCompanion implements Initializable {
     public ErrorHandler eh;
     public ChoiceBox cCurr, cWant;
 
+    /**
+     * DEPRECATED, replaced by handleIncrementLang()
+     * @throws DBPFException 
+     */
+    @Deprecated
     public void handleIncrement() throws DBPFException {
         long maxLength = Long.parseLong("4294967280");
         //long maxLength = Long.parseLong("100");           for testing purposes
@@ -98,17 +105,18 @@ public class LTEXToolCompanion implements Initializable {
         }
         lastAction("Incremented GIDs by " + increment, Color.DARKGREEN);
 
+
         readDataIntoTable(true);
     }
 
-    public void handleIncrement2() throws DBPFException {
-        
+    public void handleIncrementLang() throws DBPFException {
+
         long maxLength = Long.parseLong("4294967260");
-        
-        long currOffset = Long.parseLong(((SC4Language)cCurr.getSelectionModel().getSelectedItem()).getIncr());
-        long wantOffset = Long.parseLong(((SC4Language)cWant.getSelectionModel().getSelectedItem()).getIncr());
+
+        long currOffset = Long.parseLong(((SC4Language) cCurr.getSelectionModel().getSelectedItem()).getIncr());
+        long wantOffset = Long.parseLong(((SC4Language) cWant.getSelectionModel().getSelectedItem()).getIncr());
         long toOffsetBy = wantOffset - currOffset;
-        
+
         for (DBPFType type : typeList) {
             long currGID = type.getGID();
             if (currGID + toOffsetBy >= maxLength) {
@@ -124,6 +132,7 @@ public class LTEXToolCompanion implements Initializable {
             }
         }
         lastAction("Incremented GIDs by " + toOffsetBy, Color.DARKGREEN);
+        cCurr.getSelectionModel().select(cWant.getSelectionModel().getSelectedIndex());
 
         readDataIntoTable(true);
     }
@@ -142,10 +151,12 @@ public class LTEXToolCompanion implements Initializable {
 
             //Show open file dialog
             file = fc.showOpenDialog(null);
-            theDAT = DBPFReader.readCollection(file);
+            if (file != null) {
+                theDAT = DBPFReader.readCollection(file);
 
-            lastAction("Opened " + theDAT.getFilename().getName(), Color.DARKGREEN);
-            readDataIntoTable(false);
+                lastAction("Opened " + theDAT.getFilename().getName(), Color.DARKGREEN);
+                readDataIntoTable(false);
+            }
         } catch (Exception e) {
             eh.throwError("Could not open that file", "Opening failed", e);
             lastAction("Failed to open file", Color.DARKRED);
@@ -262,6 +273,8 @@ public class LTEXToolCompanion implements Initializable {
 
     public void handleRegex() throws DBPFException {
         try {
+            if(regexField.getText() == null) return;    //No input
+            
             typeList = theDAT.getTypeList();
             int counter = 0;
             String input = regexCheck.isSelected() ? regexField.getText().replace("\\", "\\\\") : regexField.getText();
@@ -317,6 +330,8 @@ public class LTEXToolCompanion implements Initializable {
         eh = new ErrorHandler();
         cCurr.getSelectionModel().selectFirst();
         cWant.getSelectionModel().selectFirst();
+        cCurr.setTooltip(new Tooltip("Language the file is currently in.\nUsed for the GID offsets"));
+        cWant.setTooltip(new Tooltip("Language you want the file to be in\nUsed for the GID offsets"));
     }
 
     public void handleResetLTEXT() {

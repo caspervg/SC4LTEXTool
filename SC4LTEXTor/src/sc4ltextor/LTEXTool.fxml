@@ -10,8 +10,9 @@
 <?import javafx.scene.text.*?>
 <?import sc4ltextor.*?>
 <?scenebuilder-background-color 0xdfdfdfff?>
+<?scenebuilder-classpath-element ../../dist/SC4LTEXTor.jar?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml" fx:controller="sc4ltextor.LTEXToolCompanion">
+<AnchorPane id="AnchorPane" maxHeight="500.1" maxWidth="800.1" minHeight="499.5" minWidth="799.5" prefHeight="500.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml" fx:controller="sc4ltextor.LTEXToolCompanion">
   <children>
     <FlowPane hgap="5.0" layoutX="0.0" layoutY="20.0" minWidth="165.0" prefHeight="443.0" prefWidth="169.0" vgap="5.0">
       <children>
@@ -27,57 +28,57 @@
             <Font name="System Bold" size="12.0" fx:id="x1" />
           </font>
         </Label>
-        <ChoiceBox prefWidth="145.0" fx:id="cCurr">
+        <ChoiceBox fx:id="cCurr" prefWidth="145.0">
           <items>
             <FXCollections fx:factory="observableArrayList">
-              <SC4Language name="International" incr="0"/>
-              <SC4Language name="US English" incr="1" />
-              <SC4Language name="UK English" incr="2" />
-              <SC4Language name="French" incr="3" />
-              <SC4Language name="German" incr="4" />
-              <SC4Language name="Italian" incr="5" />
-              <SC4Language name="Spanish" incr="6" />
-              <SC4Language name="Dutch" incr="7" />
-              <SC4Language name="Danish" incr="8" />
-              <SC4Language name="Swedish" incr="9" />
-              <SC4Language name="Norwegian" incr="10" />
-              <SC4Language name="Finnish" incr="11" />
-              <SC4Language name="Japanese" incr="15" />
-              <SC4Language name="Polish" incr="16" />
-              <SC4Language name="Chinese (Simpl.)" incr="17" />
-              <SC4Language name="Chinese (Trad.)" incr="18" />
-              <SC4Language name="Thai" incr="19" />
-              <SC4Language name="Korean" incr="20" />
-              <SC4Language name="Portuguese" incr="35" />
+              <SC4Language incr="0" name="International" />
+              <SC4Language incr="1" name="US English" />
+              <SC4Language incr="2" name="UK English" />
+              <SC4Language incr="3" name="French" />
+              <SC4Language incr="4" name="German" />
+              <SC4Language incr="5" name="Italian" />
+              <SC4Language incr="6" name="Spanish" />
+              <SC4Language incr="7" name="Dutch" />
+              <SC4Language incr="8" name="Danish" />
+              <SC4Language incr="9" name="Swedish" />
+              <SC4Language incr="10" name="Norwegian" />
+              <SC4Language incr="11" name="Finnish" />
+              <SC4Language incr="15" name="Japanese" />
+              <SC4Language incr="16" name="Polish" />
+              <SC4Language incr="17" name="Chinese (Simpl.)" />
+              <SC4Language incr="18" name="Chinese (Trad.)" />
+              <SC4Language incr="19" name="Thai" />
+              <SC4Language incr="20" name="Korean" />
+              <SC4Language incr="35" name="Portuguese" />
             </FXCollections>
           </items>
         </ChoiceBox>
-        <ChoiceBox prefWidth="145.0"  fx:id="cWant">
+        <ChoiceBox fx:id="cWant" prefWidth="145.0">
           <items>
             <FXCollections fx:factory="observableArrayList">
-              <SC4Language name="International" incr="0"/>
-              <SC4Language name="US English" incr="1" />
-              <SC4Language name="UK English" incr="2" />
-              <SC4Language name="French" incr="3" />
-              <SC4Language name="German" incr="4" />
-              <SC4Language name="Italian" incr="5" />
-              <SC4Language name="Spanish" incr="6" />
-              <SC4Language name="Dutch" incr="7" />
-              <SC4Language name="Danish" incr="8" />
-              <SC4Language name="Swedish" incr="9" />
-              <SC4Language name="Norwegian" incr="10" />
-              <SC4Language name="Finnish" incr="11" />
-              <SC4Language name="Japanese" incr="15" />
-              <SC4Language name="Polish" incr="16" />
-              <SC4Language name="Chinese (Simpl.)" incr="17" />
-              <SC4Language name="Chinese (Trad.)" incr="18" />
-              <SC4Language name="Thai" incr="19" />
-              <SC4Language name="Korean" incr="20" />
-              <SC4Language name="Portuguese" incr="35" />
+              <SC4Language incr="0" name="International" />
+              <SC4Language incr="1" name="US English" />
+              <SC4Language incr="2" name="UK English" />
+              <SC4Language incr="3" name="French" />
+              <SC4Language incr="4" name="German" />
+              <SC4Language incr="5" name="Italian" />
+              <SC4Language incr="6" name="Spanish" />
+              <SC4Language incr="7" name="Dutch" />
+              <SC4Language incr="8" name="Danish" />
+              <SC4Language incr="9" name="Swedish" />
+              <SC4Language incr="10" name="Norwegian" />
+              <SC4Language incr="11" name="Finnish" />
+              <SC4Language incr="15" name="Japanese" />
+              <SC4Language incr="16" name="Polish" />
+              <SC4Language incr="17" name="Chinese (Simpl.)" />
+              <SC4Language incr="18" name="Chinese (Trad.)" />
+              <SC4Language incr="19" name="Thai" />
+              <SC4Language incr="20" name="Korean" />
+              <SC4Language incr="35" name="Portuguese" />
             </FXCollections>
           </items>
         </ChoiceBox>
-        <Button mnemonicParsing="false" onAction="#handleIncrement2" prefWidth="145.0" text="Batch Increment" />
+        <Button mnemonicParsing="false" onAction="#handleIncrementLang" prefWidth="145.0" text="Batch Increment" />
         <Separator prefWidth="145.0" FlowPane.margin="$x2" />
         <Label font="$x1" text="Replace:">
           <FlowPane.margin>
