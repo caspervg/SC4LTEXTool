@@ -51,8 +51,7 @@ import ssp.dbpf.DBPFCollection;
 import ssp.dbpf.event.DBPFException;
 import ssp.dbpf.io.DBPFReader;
 import ssp.dbpf.io.DBPFWriter;
-import ssp.dbpf.tgi.TGIKey;
-import ssp.dbpf.tgi.TGIKeys;
+import ssp.dbpf.tgi.*;
 import ssp.dbpf.types.DBPFLText;
 import ssp.dbpf.types.DBPFType;
 
@@ -248,6 +247,9 @@ public class LTEXToolCompanion implements Initializable {
 
     public void handleBatchTranslation() {
         try {
+            if(transin.getText().isEmpty() || transout.getText().isEmpty()) {
+                return; // No input
+            }
             typeList = theDAT.getTypeList();
             String transintext = transin.getText();
             String transouttext = transout.getText();
@@ -274,8 +276,8 @@ public class LTEXToolCompanion implements Initializable {
 
     public void handleRegex() throws DBPFException {
         try {
-            if (regexField.getText() == null || regexField.getText().equals("")) {
-                return;    //No input
+            if (regexField.getText().isEmpty()) {
+                return; //No input
             }
             typeList = theDAT.getTypeList();
             int counter = 0;
