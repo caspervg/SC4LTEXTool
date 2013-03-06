@@ -82,7 +82,8 @@ public class LTEXToolCompanion implements Initializable {
 
     /**
      * DEPRECATED, replaced by handleIncrementLang()
-     * @throws DBPFException 
+     *
+     * @throws DBPFException
      */
     @Deprecated
     public void handleIncrement() throws DBPFException {
@@ -273,8 +274,9 @@ public class LTEXToolCompanion implements Initializable {
 
     public void handleRegex() throws DBPFException {
         try {
-            if(regexField.getText() == null) return;    //No input
-            
+            if (regexField.getText() == null || regexField.getText().equals("")) {
+                return;    //No input
+            }
             typeList = theDAT.getTypeList();
             int counter = 0;
             String input = regexCheck.isSelected() ? regexField.getText().replace("\\", "\\\\") : regexField.getText();
@@ -324,6 +326,10 @@ public class LTEXToolCompanion implements Initializable {
                     handleUpdateLTEXT();
                 } else if (t.getCode() == KeyCode.F2) {
                     handleResetLTEXT();
+                } else if (t.getCode() == KeyCode.PAGE_DOWN) {
+                    handleNextLTEXT();
+                } else if (t.getCode() == KeyCode.PAGE_UP) {
+                    handlePreviousLTEXT();
                 }
             }
         });
@@ -332,6 +338,32 @@ public class LTEXToolCompanion implements Initializable {
         cWant.getSelectionModel().selectFirst();
         cCurr.setTooltip(new Tooltip("Language the file is currently in.\nUsed for the GID offsets"));
         cWant.setTooltip(new Tooltip("Language you want the file to be in\nUsed for the GID offsets"));
+    }
+
+    public void handleNextLTEXT() {
+        try {
+            handleUpdateLTEXT();
+            int index = Integer.parseInt(textar.getId());
+            DBPFLText ltext = (DBPFLText) typeList.get(index + 1);
+            textar.setText(ltext.getString());
+            textar.setId("" + (index + 1));
+        } catch (Exception e) {
+            eh.throwError("Could not edit the/goto next LTEXT.", "Failed to Edit/GoToNext LTEXT", e);
+            lastAction("Failed to Edit", Color.DARKRED);
+        }
+    }
+
+    public void handlePreviousLTEXT() {
+        try {
+            handleUpdateLTEXT();
+            int index = Integer.parseInt(textar.getId());
+            DBPFLText ltext = (DBPFLText) typeList.get(index - 1);
+            textar.setText(ltext.getString());
+            textar.setId("" + (index - 1));
+        } catch (Exception e) {
+            eh.throwError("Could not edit the/goto previous the LTEXT.", "Failed to Edit/GoToPrevious LTEXT", e);
+            lastAction("Failed to Edit", Color.DARKRED);
+        }
     }
 
     public void handleResetLTEXT() {

@@ -41,6 +41,6 @@ public class SC4Language {
     
     @Override
     public String toString() {
-        return name + " (0x" + Long.toHexString(Long.parseLong(incr)) + ")";
+        return name + " (0x" + (""+Long.toHexString(Long.parseLong(incr))).toUpperCase() + ")";
     }
 }
