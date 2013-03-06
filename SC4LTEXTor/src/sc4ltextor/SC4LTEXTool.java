@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sc4translator;
+package sc4ltextor;
 
 import java.io.IOException;
 import javafx.application.Application;
@@ -15,15 +15,15 @@ import javafx.stage.Stage;
  *
  * @author Casper
  */
-public class SC4Translator extends Application {
-    
+public class SC4LTEXTool extends Application {
+
     @Override
     public void start(Stage stage) throws IOException {
-    Parent root = FXMLLoader.load(getClass().getResource("TranslatorMock.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("LTEXTool.fxml"));
 
-    stage.setTitle("SC4 LTEXT Tool");
-    stage.setScene(new Scene(root, 750, 400));
-    stage.show();
+        stage.setTitle("SC4 LTEXTool");
+        stage.setScene(new Scene(root, 800, 500));
+        stage.show();
     }
 
     /**

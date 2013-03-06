@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="200.0" prefWidth="300.0" xmlns:fx="http://javafx.com/fxml" fx:controller="sc4ltextor.AboutWindowController">
+  <children>
+    <BorderPane layoutX="14.0" layoutY="0.0" prefHeight="200.0" prefWidth="272.0">
+      <center>
+        <VBox alignment="CENTER_LEFT" prefHeight="133.0" prefWidth="173.0">
+          <children>
+            <Label text="Credits:">
+              <font>
+                <Font name="System Bold" size="12.0" fx:id="x1" />
+              </font>
+            </Label>
+            <Label text="LTEXTool by CasperVg" />
+            <Label text="JDBPF2 Library by Stefan79" />
+            <Label text="" />
+            <Label font="$x1" text="Thanks to:" />
+            <Label text="jdenm8: for the idea and valuable help" />
+            <Label text="z / Andreas: suggestions and advice" />
+            <Label text="Stefan79: formidable Java DBPF library" />
+          </children>
+          <padding>
+            <Insets left="2.5" right="2.5" fx:id="x2" />
+          </padding>
+        </VBox>
+      </center>
+      <left>
+        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" BorderPane.margin="$x2" />
+      </left>
+      <top>
+        <Label prefHeight="48.0" prefWidth="153.0" text="About the LTEXTool" textAlignment="CENTER" wrapText="true" BorderPane.alignment="BOTTOM_CENTER">
+          <font>
+            <Font name="System Bold" size="16.0" />
+          </font>
+          <BorderPane.margin>
+            <Insets bottom="2.5" top="2.5" />
+          </BorderPane.margin>
+        </Label>
+      </top>
+    </BorderPane>
+    <Separator layoutX="0.0" layoutY="51.0" prefWidth="300.0" />
+  </children>
+</AnchorPane>

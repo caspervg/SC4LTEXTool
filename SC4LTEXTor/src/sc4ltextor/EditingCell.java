@@ -15,7 +15,7 @@ import javafx.scene.input.KeyEvent;
  *
  * @author Casper
  */
-public class EditingCell extends TableCell<LTTable, String> {
+public class EditingCell extends TableCell<LTEXTTableRow, String> {
 
     private TextField textField;
     private long gid;

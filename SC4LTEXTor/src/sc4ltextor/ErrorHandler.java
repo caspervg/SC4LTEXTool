@@ -23,7 +23,12 @@ public class ErrorHandler {
     }
 
     public void throwError(String errorMessage, String errorTitle, Exception ex) {
-        throwError(errorMessage + "\n" + ex.getMessage(),errorTitle);
+        if(ex.getMessage() != null) {
+            throwError(errorMessage + "\n" + ex.getMessage(), errorTitle);
+        }
+        else {
+            throwError(errorMessage, errorTitle);
+        }
     }
     
     public int getNumErrors() {

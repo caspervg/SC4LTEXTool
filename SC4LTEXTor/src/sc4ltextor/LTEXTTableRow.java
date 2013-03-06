@@ -11,14 +11,14 @@ import javafx.beans.property.SimpleStringProperty;
  *
  * @author Casper
  */
-public class LTTable {
+public class LTEXTTableRow {
 
     private SimpleStringProperty gid;
     private SimpleStringProperty iid;
     private SimpleStringProperty string;
     private SimpleIntegerProperty index;
 
-    LTTable(long giD, long iiD, String string, int index) {
+    LTEXTTableRow(long giD, long iiD, String string, int index) {
         this.gid = new SimpleStringProperty(Long.toHexString(giD));
         this.iid = new SimpleStringProperty(Long.toHexString(iiD));
         this.string = new SimpleStringProperty(string);

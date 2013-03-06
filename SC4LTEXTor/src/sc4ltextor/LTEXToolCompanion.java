@@ -4,24 +4,27 @@
  */
 package sc4ltextor;
 
-import java.io.BufferedWriter;
 import javafx.scene.input.MouseEvent;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBuilder;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.LabelBuilder;
 import javafx.scene.control.OverrunStyle;
@@ -57,7 +60,7 @@ import ssp.dbpf.types.DBPFType;
  *
  * @author Casper
  */
-public class LTEXTorController implements Initializable {
+public class LTEXToolCompanion implements Initializable {
 
     @FXML
     private Insets x2;
@@ -65,14 +68,15 @@ public class LTEXTorController implements Initializable {
     private Font x1;
     public DBPFCollection theDAT;
     private List<DBPFType> typeList;
-    public TableView<LTTable> table;
-    private final ObservableList<LTTable> tabledata = FXCollections.observableArrayList();
+    public TableView<LTEXTTableRow> table;
+    private final ObservableList<LTEXTTableRow> tabledata = FXCollections.observableArrayList();
     public TableColumn gidcol, iidcol, contcol, indexcol;
     public TextField transin, transout, incr, regexField;
     public Label lastaction;
     public TextArea textar;
     public CheckBox regexCheck;
     public ErrorHandler eh;
+    public ChoiceBox cCurr, cWant;
 
     public void handleIncrement() throws DBPFException {
         long maxLength = Long.parseLong("4294967280");
@@ -93,6 +97,33 @@ public class LTEXTorController implements Initializable {
             }
         }
         lastAction("Incremented GIDs by " + increment, Color.DARKGREEN);
+
+        readDataIntoTable(true);
+    }
+
+    public void handleIncrement2() throws DBPFException {
+        
+        long maxLength = Long.parseLong("4294967260");
+        
+        long currOffset = Long.parseLong(((SC4Language)cCurr.getSelectionModel().getSelectedItem()).getIncr());
+        long wantOffset = Long.parseLong(((SC4Language)cWant.getSelectionModel().getSelectedItem()).getIncr());
+        long toOffsetBy = wantOffset - currOffset;
+        
+        for (DBPFType type : typeList) {
+            long currGID = type.getGID();
+            if (currGID + toOffsetBy >= maxLength) {
+                JOptionPane.showMessageDialog(null, "Could not increment the Group IDs.\nOne (or more) entries have a GID higher than the maximum value of 0xFFFFFFF0", "ERROR: Failed to increment!", JOptionPane.ERROR_MESSAGE);
+                lastAction("ERROR Incrementing", Color.DARKRED);
+                return;
+            }
+        }
+        for (DBPFType type : typeList) {
+            long currGID = type.getGID();
+            if (currGID + toOffsetBy < maxLength) {
+                type.setTGIKey(new TGIKey(type.getTID(), type.getGID() + toOffsetBy, type.getIID()));
+            }
+        }
+        lastAction("Incremented GIDs by " + toOffsetBy, Color.DARKGREEN);
 
         readDataIntoTable(true);
     }
@@ -284,6 +315,8 @@ public class LTEXTorController implements Initializable {
             }
         });
         eh = new ErrorHandler();
+        cCurr.getSelectionModel().selectFirst();
+        cWant.getSelectionModel().selectFirst();
     }
 
     public void handleResetLTEXT() {
@@ -321,6 +354,19 @@ public class LTEXTorController implements Initializable {
             eh.throwError("Could not remove the LTEXT", "Failed to Remove LTEXT", e);
             lastAction("Failed to Remove", Color.DARKRED);
         }
+    }
+
+    public void handleClose() {
+        Platform.exit();
+    }
+
+    public void handleAbout() throws IOException {
+        Stage aboutStage = new Stage();
+        Parent root = FXMLLoader.load(getClass().getResource("AboutWindow.fxml"));
+
+        aboutStage.setTitle("SC4 LTEXT Tool");
+        aboutStage.setScene(new Scene(root, 300, 200));
+        aboutStage.show();
     }
 
     public void handleAddLTEXT() {
@@ -384,7 +430,7 @@ public class LTEXTorController implements Initializable {
         for (int i = 0; i < typeList.size(); i++) {
             DBPFType type = typeList.get(i);
             if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
-                tabledata.add(new LTTable(type.getGID(), type.getIID(), ((DBPFLText) type).getString(), i));
+                tabledata.add(new LTEXTTableRow(type.getGID(), type.getIID(), ((DBPFLText) type).getString(), i));
             }
         }
 
@@ -405,18 +451,18 @@ public class LTEXTorController implements Initializable {
             }
         };
 
-        gidcol.setCellValueFactory(new PropertyValueFactory<LTTable, String>("gid"));
-        iidcol.setCellValueFactory(new PropertyValueFactory<LTTable, String>("iid"));
-        contcol.setCellValueFactory(new PropertyValueFactory<LTTable, String>("string"));
-        indexcol.setCellValueFactory(new PropertyValueFactory<LTTable, Integer>("index"));
+        gidcol.setCellValueFactory(new PropertyValueFactory<LTEXTTableRow, String>("gid"));
+        iidcol.setCellValueFactory(new PropertyValueFactory<LTEXTTableRow, String>("iid"));
+        contcol.setCellValueFactory(new PropertyValueFactory<LTEXTTableRow, String>("string"));
+        indexcol.setCellValueFactory(new PropertyValueFactory<LTEXTTableRow, Integer>("index"));
         //--- Add for Editable Cell of Value field, in Double
         contcol.setCellFactory(cellFactory);
         contcol.setOnEditCommit(
-                new EventHandler<TableColumn.CellEditEvent<LTTable, String>>() {
+                new EventHandler<TableColumn.CellEditEvent<LTEXTTableRow, String>>() {
             @Override
-            public void handle(TableColumn.CellEditEvent<LTTable, String> t) {
+            public void handle(TableColumn.CellEditEvent<LTEXTTableRow, String> t) {
                 String newValue = t.getNewValue();
-                ((LTTable) t.getTableView().getItems().get(t.getTablePosition().getRow())).setString(newValue);
+                ((LTEXTTableRow) t.getTableView().getItems().get(t.getTablePosition().getRow())).setString(newValue);
                 //Sets the actual DBPF string to the new string
                 ((DBPFLText) theDAT.getTypeList().get(t.getTableView().getItems().get(t.getTablePosition().getRow()).getIndex())).setString(newValue);
                 lastAction("Edited LTEXT " + t.getTableView().getItems().get(t.getTablePosition().getRow()).getIndex(), Color.DARKGREEN);

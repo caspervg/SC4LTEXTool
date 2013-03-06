@@ -10,9 +10,9 @@
 <?import javafx.scene.text.*?>
 <?scenebuilder-background-color 0xdfdfdfff?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="750.0" xmlns:fx="http://javafx.com/fxml" fx:controller="sc4ltextor.LTEXTorController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="750.0" xmlns:fx="http://javafx.com/fxml" fx:controller="sc4ltextor.LTEXTorController">
   <children>
-    <FlowPane hgap="5.0" layoutX="0.0" layoutY="0.0" minWidth="165.0" prefHeight="443.0" prefWidth="169.0" vgap="5.0">
+    <FlowPane hgap="5.0" layoutX="0.0" layoutY="20.0" minWidth="165.0" prefHeight="443.0" prefWidth="169.0" vgap="5.0">
       <children>
         <Button mnemonicParsing="false" onAction="#handleOpenButton" prefWidth="70.0" text="Load" />
         <Button mnemonicParsing="false" onAction="#handleSaveButton" prefWidth="70.0" text="Save" />
@@ -66,7 +66,7 @@
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
       </padding>
     </FlowPane>
-    <FlowPane layoutX="169.0" layoutY="10.0" prefHeight="383.0" prefWidth="424.0">
+    <FlowPane layoutX="169.0" layoutY="30.0" prefHeight="383.0" prefWidth="424.0">
       <children>
         <TextArea fx:id="textar" prefHeight="169.0" prefWidth="574.0" wrapText="true">
           <FlowPane.margin>
@@ -81,7 +81,7 @@
             <Button fx:id="updbutton" depthTest="INHERIT" mnemonicParsing="false" mouseTransparent="false" onAction="#handleUpdateLTEXT" text="Update LTEXT" translateX="0.0" translateY="0.0" />
           </children>
           <padding>
-            <Insets bottom="5.0" />
+            <Insets bottom="2.5" top="2.5" />
           </padding>
         </HBox>
         <TableView fx:id="table" prefHeight="237.0" prefWidth="574.0">
@@ -94,5 +94,31 @@
         </TableView>
       </children>
     </FlowPane>
+    <MenuBar layoutX="0.0" layoutY="0.0" prefWidth="750.0" style="">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#handleOpenButton" text="Load DAT" />
+            <MenuItem mnemonicParsing="false" onAction="#handleSaveButton" text="Save DAT" />
+            <MenuItem mnemonicParsing="false" onAction="#handleExport" text="Export to XML" />
+            <MenuItem mnemonicParsing="false" onAction="#handleImport" text="Import from XML" />
+            <MenuItem mnemonicParsing="false" onAction="#handleClose" text="Close LTEXTool" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#handleAddLTEXT" text="Add LTEXT" />
+            <MenuItem mnemonicParsing="false" onAction="#handleRemoveLTEXT" text="Remove LTEXT" />
+            <MenuItem mnemonicParsing="false" onAction="#handleResetLTEXT" text="Reset LTEXT" />
+            <MenuItem mnemonicParsing="false" onAction="#handleUpdateLTEXT" text="Update LTEXT" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
   </children>
 </AnchorPane>
