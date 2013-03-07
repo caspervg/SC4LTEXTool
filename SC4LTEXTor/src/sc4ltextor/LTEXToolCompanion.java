@@ -7,11 +7,14 @@ package sc4ltextor;
 import com.thoughtworks.xstream.XStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.EOFException;
 import javafx.scene.input.MouseEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -201,7 +204,7 @@ public class LTEXToolCompanion implements Initializable {
             typeList = theDAT.getTypeList();
 
             //Set extension filter FileChooser.ExtensionFilter extFilter = new
-            FileChooser.ExtensionFilter extFilterXML = new FileChooser.ExtensionFilter("XML files (.xml)", ".xml");
+            FileChooser.ExtensionFilter extFilterXML = new FileChooser.ExtensionFilter("XML files (.xml)", "*.xml");
             fc.getExtensionFilters().addAll(extFilterXML);
 
             file = fc.showSaveDialog(null);
@@ -210,29 +213,22 @@ public class LTEXToolCompanion implements Initializable {
                 XStream xs = new XStream();
                 xs.alias("LTEXT", DBPFLText.class);
                 xs.alias("DBPF", String.class);
-                int counter = 0;
                 BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-                xs.toXML(theDAT.getFilename().getName(), bw);
-                bw.newLine();
-                for (int i = 0; i < typeList.size(); i++) {
-                    DBPFType type = typeList.get(i);
+                ObjectOutputStream oos = xs.createObjectOutputStream(bw);
+                oos.writeObject(theDAT.getFilename().getName());
 
-                    if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
-                        counter++;
-                    }
-                }
-                xs.toXML(counter, bw);
                 for (int i = 0; i < typeList.size(); i++) {
                     DBPFType type = typeList.get(i);
 
                     if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
                         DBPFLText ltext = (DBPFLText) type;
-                        xs.toXML(ltext, bw);
-                        bw.newLine();
+                        oos.writeObject(ltext);
                     }
                 }
+                
+                oos.close();
                 bw.close();
-                lastAction("Exported " + counter + " LTEXTs", Color.DARKGREEN);
+                lastAction("Exported to " + file.getName(), Color.DARKGREEN);
             }
         } catch (Exception e) {
             eh.throwError("Could not export this file", "Failed to export", e);
@@ -247,7 +243,7 @@ public class LTEXToolCompanion implements Initializable {
             typeList = theDAT.getTypeList();
 
             //Set extension filter FileChooser.ExtensionFilter extFilter = new
-            FileChooser.ExtensionFilter extFilterXML = new FileChooser.ExtensionFilter("XML files (.xml)", ".xml");
+            FileChooser.ExtensionFilter extFilterXML = new FileChooser.ExtensionFilter("XML files (.xml)", "*.xml");
             fc.getExtensionFilters().addAll(extFilterXML);
 
             file = fc.showOpenDialog(null);
@@ -256,17 +252,24 @@ public class LTEXToolCompanion implements Initializable {
                 XStream xs = new XStream();
                 xs.alias("LTEXT", DBPFLText.class);
                 xs.alias("DBPF", String.class);
+                
                 BufferedReader br = new BufferedReader(new FileReader(file));
-                theDAT.setFilename(new File((String) xs.fromXML(br)));
-                int counter = (int) xs.fromXML(br);
-                System.out.println("imported name, counter");
-                for (int i = 0; i < counter; i++) {
-                    System.out.println("Imported DBPFLText " + i);
-                    theDAT.getTypeList().add(i, (DBPFLText) xs.fromXML(br));
+                ObjectInputStream ois = xs.createObjectInputStream(br);
+                theDAT.setFilename(new File((String) ois.readObject()));
+                
+                //Import rest of the file, should all be LTEXTs.
+                while(true) {
+                    try {
+                        typeList.add((DBPFLText) ois.readObject());
+                    } catch (EOFException eof) {
+                        //Stop the loop, we have reached the end of the file!
+                        break;
+                    }
                 }
+                ois.close();
                 br.close();
                 readDataIntoTable(true);
-                lastAction("Imported " + counter + " LTEXTs", Color.DARKGREEN);
+                lastAction("Imported LTEXTs", Color.DARKGREEN);
             }
         } catch (Exception e) {
             eh.throwError("Could not import this file", "Failed to import", e);
@@ -348,7 +351,7 @@ public class LTEXToolCompanion implements Initializable {
         //Syntactic sugar, it has to be here, but does nothing
         lastaction.setTextOverrun(OverrunStyle.ELLIPSIS);
         regexCheck.setSelected(true);
-        regexCheck.setTooltip(new Tooltip("Checked: Automatically double up backslashes. Not checked: You have to use double blackslashes yourself"));
+        regexCheck.setTooltip(new Tooltip("Checked: Automatically double up backslashes.\nNot checked: You have to use double blackslashes yourself"));
         regexField.setTooltip(new Tooltip("Format: REPLACE/BY"));
         textar.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override

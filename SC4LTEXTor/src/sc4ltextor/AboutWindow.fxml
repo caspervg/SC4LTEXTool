@@ -9,11 +9,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="200.0" prefWidth="300.0" xmlns:fx="http://javafx.com/fxml" fx:controller="sc4ltextor.AboutWindowController">
+<AnchorPane id="AnchorPane" prefHeight="220.0" prefWidth="300.0" xmlns:fx="http://javafx.com/fxml" fx:controller="sc4ltextor.AboutWindowController">
   <children>
-    <BorderPane layoutX="14.0" layoutY="0.0" prefHeight="200.0" prefWidth="272.0">
+    <BorderPane layoutX="14.0" layoutY="0.0" prefHeight="220.0" prefWidth="272.0">
       <center>
-        <VBox alignment="CENTER_LEFT" prefHeight="133.0" prefWidth="173.0">
+        <VBox alignment="CENTER_LEFT" prefHeight="153.0" prefWidth="173.0">
           <children>
             <Label text="Credits:">
               <font>
@@ -22,6 +22,7 @@
             </Label>
             <Label text="LTEXTool by CasperVg" />
             <Label text="JDBPF2 Library by Stefan79" />
+            <Label text="XStream Library by Codehaus" />
             <Label text="" />
             <Label font="$x1" text="Thanks to:" />
             <Label text="jdenm8: for the idea and valuable help" />
