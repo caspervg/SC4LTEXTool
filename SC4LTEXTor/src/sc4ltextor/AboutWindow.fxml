@@ -27,6 +27,7 @@
             <Label text="jdenm8: for the idea and valuable help" />
             <Label text="z / Andreas: suggestions and advice" />
             <Label text="Stefan79: formidable Java DBPF library" />
+            <Label text="riiga: a few lines of code" />
           </children>
           <padding>
             <Insets left="2.5" right="2.5" fx:id="x2" />
