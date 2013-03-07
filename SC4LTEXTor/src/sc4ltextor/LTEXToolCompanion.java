@@ -5,9 +5,11 @@
 package sc4ltextor;
 
 import com.thoughtworks.xstream.XStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import javafx.scene.input.MouseEvent;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
@@ -194,9 +196,6 @@ public class LTEXToolCompanion implements Initializable {
     }
 
     public void handleExport() throws Exception {
-        eh.throwError("Exporting files is not yet implemented.", "Failed to export");
-        lastAction("Failed to export", Color.DARKRED);
-
         try {
             FileChooser fc = new FileChooser();
             File file;
@@ -213,26 +212,28 @@ public class LTEXToolCompanion implements Initializable {
                 xs.alias("LTEXT", DBPFLText.class);
                 xs.alias("DBPF", String.class);
                 int counter = 0;
-                    BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-                    xs.toXML(theDAT.getFilename().getName(),bw);
-                    bw.newLine();
-                    
-                    for (int i = 0; i < typeList.size(); i++) {
-                        DBPFType type = typeList.get(i);
+                BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+                xs.toXML(theDAT.getFilename().getName(), bw);
+                bw.newLine();
+                for (int i = 0; i < typeList.size(); i++) {
+                    DBPFType type = typeList.get(i);
 
-                        if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
-                            DBPFLText ltext = (DBPFLText) type;
-                            xs.toXML(ltext, bw);
-                            counter++;
-                            bw.newLine();
-                        }
+                    if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
+                        counter++;
                     }
-                    
-                    xs.toXML(new Integer(counter),bw);
-                    bw.close();
-                    lastAction("Exported LTEXTs", Color.DARKGREEN);
-            } else {
-                return;
+                }
+                xs.toXML(counter, bw);
+                for (int i = 0; i < typeList.size(); i++) {
+                    DBPFType type = typeList.get(i);
+
+                    if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
+                        DBPFLText ltext = (DBPFLText) type;
+                        xs.toXML(ltext, bw);
+                        bw.newLine();
+                    }
+                }
+                bw.close();
+                lastAction("Exported " + counter + " LTEXTs", Color.DARKGREEN);
             }
         } catch (Exception e) {
             eh.throwError("Could not export this file", "Failed to export", e);
@@ -241,26 +242,37 @@ public class LTEXToolCompanion implements Initializable {
     }
 
     public void handleImport() throws Exception {
-        eh.throwError("Importing files is not yet implemented.", "Failed to import");
-        lastAction("Failed to import", Color.DARKRED);
+        try {
+            FileChooser fc = new FileChooser();
+            File file;
+            typeList = theDAT.getTypeList();
 
-        /**
-         * FileChooser fc = new FileChooser(); File file;
-         *
-         * //Set extension filter FileChooser.ExtensionFilter extFilter = new
-         * FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-         * fc.getExtensionFilters().addAll(extFilter);
-         *
-         * //Show open file dialog file = fc.showOpenDialog(null); theDAT = new
-         * DBPFCollection();
-         *
-         * try (BufferedReader in = new BufferedReader(new FileReader(file))) {
-         * theDAT.setFilename(new File(in.readLine().substring(7))); //first
-         * line, filename for imported dat in.readLine(); //second line, empty
-         * String line = null; while((line = in.readLine()) != null) { //read
-         * until EOF } } catch (IOException e) { System.out.println("Could not
-         * export data to file. " + e.getLocalizedMessage()); }
-         */
+            //Set extension filter FileChooser.ExtensionFilter extFilter = new
+            FileChooser.ExtensionFilter extFilterXML = new FileChooser.ExtensionFilter("XML files (.xml)", ".xml");
+            fc.getExtensionFilters().addAll(extFilterXML);
+
+            file = fc.showOpenDialog(null);
+
+            if (file != null) {
+                XStream xs = new XStream();
+                xs.alias("LTEXT", DBPFLText.class);
+                xs.alias("DBPF", String.class);
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                theDAT.setFilename(new File((String) xs.fromXML(br)));
+                int counter = (int) xs.fromXML(br);
+                System.out.println("imported name, counter");
+                for (int i = 0; i < counter; i++) {
+                    System.out.println("Imported DBPFLText " + i);
+                    theDAT.getTypeList().add(i, (DBPFLText) xs.fromXML(br));
+                }
+                br.close();
+                readDataIntoTable(true);
+                lastAction("Imported " + counter + " LTEXTs", Color.DARKGREEN);
+            }
+        } catch (Exception e) {
+            eh.throwError("Could not import this file", "Failed to import", e);
+            lastAction("Failed to import file", Color.DARKRED);
+        }
     }
 
     public void handleBatchTranslation() {
