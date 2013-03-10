@@ -12,17 +12,10 @@
 <?scenebuilder-background-color 0xdfdfdfff?>
 <?scenebuilder-classpath-element ../../dist/SC4LTEXTor.jar?>
 
-<AnchorPane id="AnchorPane" maxHeight="500.1" maxWidth="800.1" minHeight="499.5" minWidth="799.5" prefHeight="500.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml" fx:controller="sc4ltextor.LTEXToolCompanion">
+<AnchorPane id="AnchorPane" maxHeight="500.1" maxWidth="800.1" minHeight="489.0" minWidth="799.5" prefHeight="489.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml" fx:controller="sc4ltextor.LTEXToolCompanion">
   <children>
     <FlowPane hgap="5.0" layoutX="0.0" layoutY="20.0" minWidth="165.0" prefHeight="443.0" prefWidth="169.0" vgap="5.0">
       <children>
-        <Button mnemonicParsing="false" onAction="#handleOpenButton" prefWidth="70.0" text="Load" />
-        <Button mnemonicParsing="false" onAction="#handleSaveButton" prefWidth="70.0" text="Save" />
-        <Separator prefWidth="145.0">
-          <FlowPane.margin>
-            <Insets top="5.0" fx:id="x2" />
-          </FlowPane.margin>
-        </Separator>
         <Label text="Language selection:">
           <font>
             <Font name="System Bold" size="12.0" fx:id="x1" />
@@ -79,7 +72,11 @@
           </items>
         </ChoiceBox>
         <Button mnemonicParsing="false" onAction="#handleIncrementLang" prefWidth="145.0" text="Batch Increment" />
-        <Separator prefWidth="145.0" FlowPane.margin="$x2" />
+        <Separator prefWidth="145.0">
+          <FlowPane.margin>
+            <Insets top="5.0" fx:id="x2" />
+          </FlowPane.margin>
+        </Separator>
         <Label font="$x1" text="Replace:">
           <FlowPane.margin>
             <Insets />
@@ -112,6 +109,12 @@
             <Font size="12.0" />
           </font>
         </Label>
+        <ProgressBar fx:id="bar" prefHeight="20.0" prefWidth="145.0" progress="0.0">
+          <FlowPane.margin>
+            <Insets top="5.0" fx:id="x2" />
+          </FlowPane.margin>
+        </ProgressBar>
+        <Separator prefWidth="145.0" FlowPane.margin="$x2" />
       </children>
       <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -135,7 +138,7 @@
             <Insets bottom="2.5" top="2.5" />
           </padding>
         </HBox>
-        <TableView fx:id="table" prefHeight="259.0" prefWidth="624.0">
+        <TableView fx:id="table" prefHeight="250.0" prefWidth="624.0">
           <columns>
             <TableColumn prefWidth="45.0" text="Index" fx:id="indexcol" />
             <TableColumn prefWidth="75.0" text="Group ID" fx:id="gidcol" />

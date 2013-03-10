@@ -21,6 +21,16 @@ public class ErrorHandler {
         JOptionPane.showMessageDialog(null, errorMessage, "ERROR: " + errorTitle, JOptionPane.ERROR_MESSAGE);
         numErrors++;
     }
+    
+    public void throwAlert(String errorMessage, String errorTitle) {
+        JOptionPane.showMessageDialog(null, errorMessage, "WARNING: " + errorTitle, JOptionPane.WARNING_MESSAGE);
+        numErrors++;
+    }
+
+    public void throwInfo(String errorMessage, String errorTitle) {
+        JOptionPane.showMessageDialog(null, errorMessage, "INFO: " + errorTitle, JOptionPane.INFORMATION_MESSAGE);
+        numErrors++;
+    }
 
     public void throwError(String errorMessage, String errorTitle, Exception ex) {
         if(ex.getMessage() != null) {

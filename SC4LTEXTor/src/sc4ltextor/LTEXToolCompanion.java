@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -36,6 +37,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.LabelBuilder;
 import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -75,10 +77,10 @@ public class LTEXToolCompanion implements Initializable {
     @FXML
     private Font x1;
     public DBPFCollection theDAT;
-    private List<DBPFType> typeList;
+    public List<DBPFType> typeList;
     public TableView<LTEXTTableRow> table;
     public AnchorPane anchor;
-    private final ObservableList<LTEXTTableRow> tabledata = FXCollections.observableArrayList();
+    public final ObservableList<LTEXTTableRow> tabledata = FXCollections.observableArrayList();
     public TableColumn gidcol, iidcol, contcol, indexcol;
     public TextField transin, transout, incr, regexField;
     public Label lastaction;
@@ -86,6 +88,7 @@ public class LTEXToolCompanion implements Initializable {
     public CheckBox regexCheck;
     public ErrorHandler eh;
     public ChoiceBox cCurr, cWant;
+    public ProgressBar bar;
 
     /**
      * DEPRECATED, replaced by handleIncrementLang()
@@ -225,7 +228,7 @@ public class LTEXToolCompanion implements Initializable {
                         oos.writeObject(ltext);
                     }
                 }
-                
+
                 oos.close();
                 bw.close();
                 lastAction("Exported to " + file.getName(), Color.DARKGREEN);
@@ -252,13 +255,13 @@ public class LTEXToolCompanion implements Initializable {
                 XStream xs = new XStream();
                 xs.alias("LTEXT", DBPFLText.class);
                 xs.alias("DBPF", String.class);
-                
+
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 ObjectInputStream ois = xs.createObjectInputStream(br);
                 theDAT.setFilename(new File((String) ois.readObject()));
-                
+
                 //Import rest of the file, should all be LTEXTs.
-                while(true) {
+                while (true) {
                     try {
                         typeList.add((DBPFLText) ois.readObject());
                     } catch (EOFException eof) {
@@ -279,7 +282,7 @@ public class LTEXToolCompanion implements Initializable {
 
     public void handleBatchTranslation() {
         try {
-            if(transin.getText().isEmpty() || transout.getText().isEmpty()) {
+            if (transin.getText().isEmpty() || transout.getText().isEmpty()) {
                 return; // No input
             }
             typeList = theDAT.getTypeList();
@@ -508,13 +511,29 @@ public class LTEXToolCompanion implements Initializable {
         }
 
         typeList = theDAT.getTypeList();
-        for (int i = 0; i < typeList.size(); i++) {
-            DBPFType type = typeList.get(i);
-            if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
-                tabledata.add(new LTEXTTableRow(type.getGID(), type.getIID(), ((DBPFLText) type).getString(), i));
+        Task task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                int size = typeList.size();
+                boolean LTextAvailable = false;
+                
+                for (int i = 0; i < size; i++) {
+                    DBPFType type = typeList.get(i);
+                    if (type.getTGIKey().equals(TGIKeys.LTEXT.getTGIKey())) {
+                        tabledata.add(new LTEXTTableRow(type.getGID(), type.getIID(), ((DBPFLText) type).getString(), i));
+                        LTextAvailable = true;
+                    }
+                    updateProgress(i, size);
+                }
+                if(!LTextAvailable) {
+                    eh.throwInfo("There are no LTEXT entries in this file.", "No LTEXTs available");
+                }
+                return null;
             }
-        }
+        };
 
+        bar.progressProperty().bind(task.progressProperty());
+        new Thread(task).start();
         table.setEditable(true);
         Callback<TableColumn, TableCell> cellFactory =
                 new Callback<TableColumn, TableCell>() {
@@ -554,5 +573,7 @@ public class LTEXToolCompanion implements Initializable {
         contcol.setResizable(true);
 
         table.setItems(tabledata);
+        bar.progressProperty().unbind();
+        bar.progressProperty().setValue(-1);
     }
 }
