@@ -375,6 +375,7 @@ public class LTEXToolCompanion implements Initializable {
         cWant.getSelectionModel().selectFirst();
         cCurr.setTooltip(new Tooltip("Language the file is currently in.\nUsed for the GID offsets"));
         cWant.setTooltip(new Tooltip("Language you want the file to be in\nUsed for the GID offsets"));
+        bar.progressProperty().setValue(-1);
     }
 
     public void handleNextLTEXT() {
